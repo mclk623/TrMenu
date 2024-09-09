@@ -49,15 +49,16 @@ repositories {
 }
 
 dependencies {
-    taboo(project(":common"))
-    taboo(project(":api:receptacle"))
-    taboo(project(":api:action"))
+    compileOnly(project(":common"))
+    compileOnly(project(":api:receptacle"))
+    compileOnly(project(":api:action"))
     taboo("ink.ptms:um:1.0.9")
 
     // Libraries
     compileOnly("org.apache.commons:commons-lang3:3.17.0")
 
     // Server Core
+    compileOnly("ink.ptms:nms-all:1.0.0")
     compileOnly("ink.ptms.core:v12002:12002-minimize:mapped")
     compileOnly("ink.ptms.core:v12002:12002-minimize:universal")
     compileOnly("ink.ptms.core:v11904:11904-minimize:mapped")
@@ -88,4 +89,19 @@ dependencies {
     compileOnly("com.willfp:eco:6.71.3") { isTransitive = false }
     compileOnly("com.willfp:EcoItems:5.49.1") { isTransitive = false }
     compileOnly(fileTree("libs"))
+}
+
+tasks {
+    jar {
+        // 构件名
+        archiveBaseName.set(rootProject.name)
+        // 打包子项目源代码
+        rootProject.subprojects.forEach { from(it.sourceSets["main"].output) }
+    }
+    sourcesJar {
+        // 构件名
+        archiveBaseName.set(rootProject.name)
+        // 打包子项目源代码
+        rootProject.subprojects.forEach { from(it.sourceSets["main"].allSource) }
+    }
 }

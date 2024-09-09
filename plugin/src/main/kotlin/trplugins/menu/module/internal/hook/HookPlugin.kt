@@ -4,9 +4,9 @@ import taboolib.common.LifeCycle
 import taboolib.common.io.runningClasses
 import taboolib.common.platform.SkipTo
 import taboolib.common.platform.function.console
+import taboolib.library.reflex.LazyClass
 import taboolib.module.lang.sendLang
 import trplugins.menu.module.internal.hook.impl.*
-import java.lang.reflect.Modifier
 import kotlin.reflect.KClass
 
 /**
@@ -15,6 +15,8 @@ import kotlin.reflect.KClass
  */
 @SkipTo(LifeCycle.ENABLE)
 object HookPlugin {
+
+    private val hookAbstractClass = LazyClass.of(HookAbstract::class.java)
 
     fun printInfo() {
         registry.filter { it.isHooked }.forEach {
@@ -25,10 +27,10 @@ object HookPlugin {
     private val registry by lazy {
         mutableListOf<HookAbstract>().also {
             runningClasses.forEach { `class` ->
-                if (Modifier.isAbstract(`class`.modifiers)) return@forEach
-                if (`class`.superclass != HookAbstract::class.java) return@forEach
+                if (`class`.structure.isAbstract) return@forEach
+                if (`class`.structure.superclass?.name != hookAbstractClass.name) return@forEach
 
-                it.add(`class`.asSubclass(HookAbstract::class.java).getConstructor().newInstance())
+                it.add(`class`.structure.owner.instance!!.asSubclass(HookAbstract::class.java).getConstructor().newInstance())
             }
         }.toTypedArray()
     }

@@ -127,7 +127,7 @@ enum class ReceptacleClickType(
         )
 
         private fun matchesFirst(string: String): ReceptacleClickType {
-            return entries.find { it.name.equals(string, true) } ?: ALL
+            return values().find { it.name.equals(string, true) } ?: ALL
         }
 
         fun matches(string: String): Set<ReceptacleClickType> {
@@ -148,7 +148,7 @@ enum class ReceptacleClickType(
                     else -> UNKNOWN
                 }
             }
-            return entries.find { it.equals(mode, button) }
+            return values().find { it.equals(mode, button) }
         }
 
         fun from(type: ClickType?, action: InventoryAction?, slot: Int = -1): ReceptacleClickType? {
@@ -159,7 +159,7 @@ enum class ReceptacleClickType(
             } else {
                 null
             }
-            return entries.find { it.equals(type, act) }
+            return values().find { it.equals(type, act) }
         }
 
     }

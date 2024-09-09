@@ -3,39 +3,36 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     java
-    kotlin("jvm") version "2.0.0"
-    id("io.izzel.taboolib") version "2.0.13"
-}
-
-// 这段。一言难尽，但我不想动 (依托)
-tasks.build {
-    doLast {
-        val plugin = project(":plugin")
-        val file =
-            file("${plugin.layout.buildDirectory.get()}/libs").listFiles()?.find { it.endsWith("plugin-$version.jar") }
-
-        file?.copyTo(file("${project.layout.buildDirectory.get()}/libs/${project.name}-$version.jar"), true)
-    }
-    dependsOn(project(":plugin").tasks.build)
+    id("org.jetbrains.kotlin.jvm") version "1.8.22"
+    id("io.izzel.taboolib") version "2.0.17"
 }
 
 subprojects {
-
     apply<JavaPlugin>()
     apply(plugin = "io.izzel.taboolib")
     apply(plugin = "org.jetbrains.kotlin.jvm")
 
+    // TabooLib 配置
     taboolib {
         env {
             install(
-                UNIVERSAL, DATABASE, KETHER, METRICS, NMS, NMS_UTIL, UI,
-                CHAT,
-                EXPANSION_REDIS, EXPANSION_JAVASCRIPT,EXPANSION_JEXL, EXPANSION_PLAYER_DATABASE, EXPANSION_PLAYER_FAKE_OP,
-                BUKKIT_ALL,EXPANSION_FOLIA
+                Bukkit,
+                BukkitFakeOp,
+                BukkitHook,
+                BukkitNMSItemTag,
+                BukkitUI,
+                BukkitUtil,
+                DatabasePlayer,
+                I18n,
+                JavaScript,
+                Jexl,
+                Kether,
+                MinecraftChat,
+                Metrics
             )
         }
         version {
-            taboolib = "6.1.2-beta10"
+            taboolib = "6.2.0-beta2"
             coroutines = null
         }
     }
@@ -43,7 +40,6 @@ subprojects {
     repositories {
         mavenCentral()
         maven("https://hub.spigotmc.org/nexus/content/groups/public/")
-        maven("http://sacredcraft.cn:8081/repository/releases") { isAllowInsecureProtocol = true }
         maven("https://repo.codemc.io/repository/nms/")
         maven("https://hub.spigotmc.org/nexus/content/groups/public/")
         maven("https://repo.opencollab.dev/main/")
@@ -53,21 +49,25 @@ subprojects {
         compileOnly(kotlin("stdlib"))
     }
 
+    // 编译配置
+    java {
+        withSourcesJar()
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
+
     tasks.withType<JavaCompile> {
         options.encoding = "UTF-8"
     }
 
-    tasks.withType<KotlinCompile>().configureEach {
+    tasks.withType<KotlinCompile>() {
         kotlinOptions {
             jvmTarget = "1.8"
             freeCompilerArgs += listOf("-Xskip-prerelease-check","-Xallow-unstable-dependencies")
         }
     }
+}
 
-    // Java 版本设置
-    configure<JavaPluginExtension> {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
-    }
-
+gradle.buildFinished {
+    buildDir.deleteRecursively()
 }

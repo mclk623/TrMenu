@@ -13,7 +13,8 @@ import taboolib.library.reflex.Reflex.Companion.getProperty
 import taboolib.library.reflex.Reflex.Companion.invokeMethod
 import taboolib.library.reflex.Reflex.Companion.setProperty
 import taboolib.library.xseries.XMaterial
-import taboolib.library.xseries.XSkull
+import taboolib.library.xseries.profiles.builder.XSkull
+import taboolib.library.xseries.profiles.objects.Profileable
 import taboolib.module.nms.MinecraftVersion
 import trplugins.menu.module.internal.hook.HookPlugin
 import java.net.URL
@@ -40,7 +41,7 @@ object Heads {
 
     private fun getCustomHead(id: String): ItemStack = CACHED_SKULLS.computeIfAbsent(id) {
         DEFAULT_HEAD.clone().apply {
-            itemMeta = itemMeta?.let { m -> XSkull.applySkin(m, id) }
+            itemMeta = itemMeta?.let { m -> XSkull.of(m).profile(Profileable.detect(id)).lenient().apply() }
         }
     }.clone()
 

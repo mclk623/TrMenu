@@ -56,7 +56,7 @@ object MenuSerializer : ISerializer {
         val id = file.nameWithoutExtension
         val result = SerialzeResult(SerialzeResult.Type.MENU)
         // 文件格式检测
-        if (!Type.entries.any { it -> it.suffixes.any { file.extension.equals(it, true) } }) {
+        if (!Type.values().any { it -> it.suffixes.any { file.extension.equals(it, true) } }) {
             result.state = SerialzeResult.State.IGNORE
             return result
         }
@@ -66,7 +66,7 @@ object MenuSerializer : ISerializer {
             return result
         }
         // 菜单类型
-        val type = Type.entries.find { it -> it.suffixes.any { file.extension.equals(it, true) } }!!
+        val type = Type.values().find { it -> it.suffixes.any { file.extension.equals(it, true) } }!!
         // 加载菜单配置
         val conf = Configuration.loadFromFile(file, type)
 
@@ -147,7 +147,7 @@ object MenuSerializer : ISerializer {
         val properties = Property.PROPERTIES.ofMap(conf,
             keyTransform = { key ->
                 val name = key.replace('-', '_')
-                InventoryView.Property.entries.find { it.name.equals(name, ignoreCase = true) }?.id ?: -1
+                InventoryView.Property.values().find { it.name.equals(name, ignoreCase = true) }?.id ?: -1
             },
             valueTransform = { value -> value.toString().toIntOrNull() }
         )
@@ -219,7 +219,7 @@ object MenuSerializer : ISerializer {
         val layout = Property.LAYOUT.ofLists(conf)
         val playerInventory = Property.LAYOUT_PLAYER_INVENTORY.ofLists(conf)
         val inventoryType = Property.INVENTORY_TYPE.ofString(conf, "CHEST")
-        val bukkitType = InventoryType.entries.find { it.name.equals(inventoryType, true) } ?: InventoryType.CHEST
+        val bukkitType = InventoryType.values().find { it.name.equals(inventoryType, true) } ?: InventoryType.CHEST
         val rows = Property.SIZE.ofInt(conf, 0).let {
             if (it > 6) return@let it / 9
             else it
@@ -341,7 +341,7 @@ object MenuSerializer : ISerializer {
             val flags = if (inherit.contains(Property.ICON_DISPLAY_FLAGS)) {
                 def!!.display.meta.flags
             } else Property.ICON_DISPLAY_FLAGS.ofStringList(display).mapNotNull { flag ->
-                ItemFlag.entries.find { it.name.equals(flag, true) }
+                ItemFlag.values().find { it.name.equals(flag, true) }
             }.toTypedArray()
             val nbt = if (inherit.contains(Property.ICON_DISPLAY_NBT)) {
                 def!!.display.meta.nbt

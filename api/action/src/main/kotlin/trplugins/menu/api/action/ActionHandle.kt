@@ -3,13 +3,14 @@ package trplugins.menu.api.action
 import taboolib.common.io.runningClasses
 import taboolib.common.platform.ProxyPlayer
 import taboolib.common.platform.function.submit
+import taboolib.library.reflex.LazyClass
 import taboolib.library.reflex.Reflex.Companion.invokeConstructor
+import taboolib.library.reflex.ReflexClass
 import trplugins.menu.api.action.base.ActionBase
 import trplugins.menu.api.action.base.ActionEntry
 import trplugins.menu.api.action.impl.logic.Break
 import trplugins.menu.api.action.impl.logic.Delay
 import trplugins.menu.util.EvalResult
-import java.lang.reflect.Modifier
 import java.util.function.BiFunction
 
 /**
@@ -29,16 +30,17 @@ class ActionHandle(
 
     private val registries = mutableSetOf<ActionBase>()
 
+    private val actionBaseClass = LazyClass.of(ActionBase::class.java)
+
     init {
         register(*runningClasses.toTypedArray())
     }
 
-    private fun register(vararg classes: Class<*>) {
+    private fun register(vararg classes: ReflexClass) {
         classes.forEach { `class` ->
-            if (Modifier.isAbstract(`class`.modifiers)) return@forEach
-            if (`class`.superclass != ActionBase::class.java) return@forEach
-
-            register(`class`.asSubclass(ActionBase::class.java).invokeConstructor(this))
+            if (`class`.structure.isAbstract) return@forEach
+            if (`class`.structure.superclass?.name != actionBaseClass.name) return@forEach
+            register(`class`.structure.owner.instance!!.asSubclass(ActionBase::class.java).invokeConstructor(this))
         }
     }
 

@@ -283,12 +283,12 @@ enum class Property(val default: String, val regex: Regex) {
         }
         return when (value) {
             is List<*> -> value.mapNotNull { property ->
-                Property.entries.find {
+                Property.values().find {
                     it.name.equals(property.toString(), true) || it.name.equals("ICON_$property", true)
                 }
             }
 
-            else -> listOfNotNull(Property.entries.find {
+            else -> listOfNotNull(Property.values().find {
                 it.name.equals(value.toString(), true) || it.name.equals("ICON_$value", true)
             })
         }

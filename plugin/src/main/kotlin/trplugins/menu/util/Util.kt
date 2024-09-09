@@ -1,10 +1,14 @@
 package trplugins.menu.util
 
-import taboolib.common.io.getInstance
+import taboolib.common.ClassAppender
+import taboolib.common.PrimitiveIO
+import taboolib.common.TabooLib
 import taboolib.common.io.runningClasses
 import taboolib.library.reflex.Reflex.Companion.getProperty
+import taboolib.library.reflex.ReflexClass
 import taboolib.module.configuration.Configuration
 import java.lang.reflect.Modifier
+import java.util.function.Supplier
 
 /**
  * @author Arasple
@@ -86,5 +90,74 @@ fun <T> fromObjectClassesCollect(`super`: Class<T>) = mutableListOf<T>().also { 
     runningClasses.forEach { `class` ->
         val instance = runCatching { `class`.getProperty<Any>("INSTANCE", true) as T }.getOrNull() ?: return@forEach
         list.add(instance)
+    }
+}
+
+/**
+ * 取该类在当前项目中被加载的任何实例
+ * 例如：@Awake 自唤醒类，或是 Kotlin Companion Object、Kotlin Object 对象
+ *
+ * @param newInstance 若无任何已加载的实例，是否实例化
+ */
+fun <T> Class<T>.getInstance(newInstance: Boolean = false): Supplier<T>? {
+    // 是否为自唤醒类
+    try {
+        val awoken = TabooLib.getAwakenedClasses()[name] as? T
+        if (awoken != null) {
+            return Supplier { awoken }
+        }
+    } catch (ex: Throwable) {
+        when (ex) {
+            // 忽略异常
+            is ClassNotFoundException, is NoClassDefFoundError -> return null
+            // 内部错误
+            is InternalError -> {
+                PrimitiveIO.println("Failed to get instance: $this")
+                ex.printStackTrace()
+                return null
+            }
+        }
+    }
+    // 反射获取实例字段
+    return try {
+        // 伴生类
+        val instanceObj = if (simpleName == "Companion") {
+            ReflexClass.of(classOf(name.substringBeforeLast('$'))).getField("Companion", findToParent = false, remap = false)
+        } else {
+            ReflexClass.of(this).getField("INSTANCE", findToParent = false, remap = false)
+        }
+        sup { instanceObj.get() as T }
+    } catch (ex: Throwable) {
+        when (ex) {
+            // 忽略异常
+            is ClassNotFoundException, is NoClassDefFoundError, is IllegalAccessError, is IncompatibleClassChangeError -> null
+            // 未找到方法
+            is NoSuchFieldException -> if (newInstance) sup { getDeclaredConstructor().newInstance() as T } else null
+            // 初始化错误 & 内部错误
+            is ExceptionInInitializerError, is InternalError -> {
+                if (ex.message != "Malformed class name") {
+                    PrimitiveIO.println("Failed to get instance: $this")
+                    ex.printStackTrace()
+                }
+                null
+            }
+            // 其他异常
+            else -> throw ex
+        }
+    }
+}
+
+private fun classOf(name: String): Class<*> {
+    return Class.forName(name, false, ClassAppender.getClassLoader())
+}
+
+private fun <T> sup(supplier: () -> T): Supplier<T> {
+    return object : Supplier<T> {
+
+        val value by lazy(LazyThreadSafetyMode.NONE) { supplier() }
+
+        override fun get(): T {
+            return value
+        }
     }
 }

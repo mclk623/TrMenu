@@ -5,8 +5,5 @@ include(
     ":plugin",
 
     ":api:receptacle",
-    ":api:action",
-
-    ":module:database",
-    ":module:migrate",
+    ":api:action"
 )
