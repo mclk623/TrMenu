@@ -4,6 +4,10 @@ include(
     ":common",
     ":plugin",
 
-    ":api:receptacle",
+    ":api:receptacle:receptacle-common",
+    ":api:receptacle:receptacle-legacy",
+    ":api:receptacle:receptacle-12005",
     ":api:action"
 )
+include("api:receptacle:receptacle-common")
+findProject(":api:receptacle:receptacle-common")?.name = "receptacle-common"

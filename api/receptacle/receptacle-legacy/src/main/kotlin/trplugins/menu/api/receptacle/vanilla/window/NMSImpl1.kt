@@ -21,7 +21,7 @@ import trplugins.menu.api.receptacle.vanilla.window.StaticInventory.staticInvent
  * @author Arasple
  * @date 2020/12/4 21:25
  */
-class NMSImpl : NMS() {
+class NMSImpl1 : NMS() {
 
     private val emptyItemStack: net.minecraft.server.v1_16_R3.ItemStack? = CraftItemStack.asNMSCopy((ItemStack(Material.AIR)))
     private val version = MinecraftVersion.majorLegacy
