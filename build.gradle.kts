@@ -19,7 +19,6 @@ subprojects {
                 Bukkit,
                 BukkitFakeOp,
                 BukkitHook,
-                BukkitNMSDataSerializer,
                 BukkitNMSItemTag,
                 BukkitUI,
                 BukkitUtil,

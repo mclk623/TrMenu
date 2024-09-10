@@ -1,7 +1,6 @@
 package trplugins.menu.api.receptacle.vanilla.window
 
 import net.minecraft.core.NonNullList
-import net.minecraft.network.PacketDataSerializer
 import net.minecraft.network.protocol.game.PacketPlayOutCloseWindow
 import net.minecraft.network.protocol.game.PacketPlayOutOpenWindow
 import net.minecraft.network.protocol.game.PacketPlayOutSetSlot
@@ -17,7 +16,6 @@ import org.bukkit.inventory.InventoryView
 import org.bukkit.inventory.ItemStack
 import taboolib.library.reflex.Reflex.Companion.getProperty
 import taboolib.library.reflex.Reflex.Companion.setProperty
-import taboolib.module.nms.dataSerializerBuilder
 import taboolib.module.nms.sendPacket
 import trplugins.menu.api.receptacle.vanilla.window.StaticInventory.inventoryView
 import trplugins.menu.api.receptacle.vanilla.window.StaticInventory.staticInventory
@@ -51,9 +49,7 @@ class NMSImpl2 : NMS() {
             StaticInventory.close(player)
             return
         }
-        player.sendPacket(PacketPlayOutCloseWindow.STREAM_CODEC.decode(dataSerializerBuilder {
-            writeInt(windowId)
-        }.build() as PacketDataSerializer))
+        player.sendPacket(PacketPlayOutCloseWindow(windowId))
     }
 
     override fun sendWindowsItems(player: Player, windowId: Int, items: Array<ItemStack?>) {
@@ -113,11 +109,7 @@ class NMSImpl2 : NMS() {
             view.setProperty(property, value)
             return
         }
-        player.sendPacket(PacketPlayOutWindowData.STREAM_CODEC.decode(dataSerializerBuilder {
-            writeInt(windowId)
-            writeInt(id)
-            writeInt(value)
-        }.build() as PacketDataSerializer))
+        player.sendPacket(PacketPlayOutWindowData(windowId, id, value))
     }
 
     private fun getInventoryProperty(type: InventoryType, id: Int): InventoryView.Property? {

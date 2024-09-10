@@ -50,7 +50,7 @@ repositories {
 
 dependencies {
     compileOnly(project(":common"))
-    compileOnly(project(":api:receptacle"))
+    compileOnly(project(":api:receptacle:receptacle-common"))
     compileOnly(project(":api:action"))
     taboo("ink.ptms:um:1.0.9")
 
