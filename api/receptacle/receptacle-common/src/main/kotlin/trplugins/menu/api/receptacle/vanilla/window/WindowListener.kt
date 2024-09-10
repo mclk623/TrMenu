@@ -11,7 +11,6 @@ import taboolib.common.platform.event.SubscribeEvent
 import taboolib.common.platform.function.submit
 import taboolib.module.nms.MinecraftVersion
 import taboolib.module.nms.PacketReceiveEvent
-import taboolib.module.nms.nmsProxy
 import trplugins.menu.api.receptacle.ReceptacleClickType
 import trplugins.menu.api.receptacle.ReceptacleCloseEvent
 import trplugins.menu.api.receptacle.ReceptacleInteractEvent
@@ -31,7 +30,7 @@ object WindowListener {
             } else {
                 e.packet.read<Int>("a")
             }
-            if (id == nmsProxy<NMS>().windowId(e.player)) {
+            if (id == NMS.instance.windowId(e.player)) {
                 e.isCancelled = true
                 val slot: Int
                 val clickType: ReceptacleClickType
@@ -57,7 +56,7 @@ object WindowListener {
             } else {
                 e.packet.read<Int>("id")
             }
-            if (id == nmsProxy<NMS>().windowId(e.player)) {
+            if (id == NMS.instance.windowId(e.player)) {
                 close(e.player, receptacle)
             }
             e.isCancelled = true
@@ -102,9 +101,9 @@ object WindowListener {
         receptacle.callEventClick(evt)
         if (evt.isCancelled) {
             if (clickType == ReceptacleClickType.OFFHAND) {
-                nmsProxy<NMS>().sendWindowsSetSlot(player, windowId = 0, slot = 45)
+                NMS.instance.sendWindowsSetSlot(player, windowId = 0, slot = 45)
             } else {
-                nmsProxy<NMS>().sendWindowsSetSlot(player, slot = -1, windowId = -1)
+                NMS.instance.sendWindowsSetSlot(player, slot = -1, windowId = -1)
             }
         }
     }
@@ -121,7 +120,7 @@ object WindowListener {
         submit(delay = 4, async = true) {
             val viewingReceptacle = player.getViewingReceptacle()
             if (viewingReceptacle == receptacle) {
-                nmsProxy<NMS>().sendWindowsClose(player)
+                NMS.instance.sendWindowsClose(player)
             }
         }
     }

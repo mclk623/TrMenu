@@ -10,7 +10,7 @@ import org.bukkit.inventory.ItemStack
  * @author mical
  * @date 2024/9/10 16:52
  */
-class NMSImpl2 : NMS() {
+class NMSImpl3 : NMS() {
 
     override fun windowId(player: Player, create: Boolean): Int {
         TODO("Not yet implemented")

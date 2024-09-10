@@ -3,7 +3,6 @@ package trplugins.menu.api.receptacle.vanilla.window
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import taboolib.common.platform.function.submit
-import taboolib.module.nms.nmsProxy
 import trplugins.menu.api.receptacle.Receptacle
 import trplugins.menu.api.receptacle.ReceptacleInteractEvent
 import trplugins.menu.api.receptacle.setViewingReceptacle
@@ -47,7 +46,7 @@ open class WindowReceptacle(var type: WindowLayout, override var title: String =
     override fun setElement(element: ItemStack?, slot: Int, display: Boolean) {
         contents[slot] = element
         if (!display || viewer == null) return
-        nmsProxy<NMS>().sendWindowsSetSlot(viewer!!, slot = slot, itemStack = element, stateId = stateId)
+        NMS.instance.sendWindowsSetSlot(viewer!!, slot = slot, itemStack = element, stateId = stateId)
     }
 
     override fun clear(display: Boolean) {
@@ -62,9 +61,9 @@ open class WindowReceptacle(var type: WindowLayout, override var title: String =
             setupPlayerInventorySlots()
             runCatching {
                 if (slot >= 0) {
-                    nmsProxy<NMS>().sendWindowsSetSlot(viewer!!, slot = slot, itemStack = contents[slot], stateId = stateId)
+                    NMS.instance.sendWindowsSetSlot(viewer!!, slot = slot, itemStack = contents[slot], stateId = stateId)
                 } else {
-                    nmsProxy<NMS>().sendWindowsItems(viewer!!, items = contents)
+                    NMS.instance.sendWindowsItems(viewer!!, items = contents)
                 }
             }
         }
@@ -80,7 +79,7 @@ open class WindowReceptacle(var type: WindowLayout, override var title: String =
     override fun close(sendPacket: Boolean) {
         if (viewer != null) {
             if (sendPacket) {
-                nmsProxy<NMS>().sendWindowsClose(viewer!!)
+                NMS.instance.sendWindowsClose(viewer!!)
             }
             onClose(viewer!!, this)
             viewer!!.setViewingReceptacle(null)
@@ -98,7 +97,7 @@ open class WindowReceptacle(var type: WindowLayout, override var title: String =
 
     override fun property(id: Int, value: Int) {
         if (viewer != null) {
-            nmsProxy<NMS>().sendWindowsUpdateData(viewer!!, id = id, value = value)
+            NMS.instance.sendWindowsUpdateData(viewer!!, id = id, value = value)
         }
     }
 
@@ -110,8 +109,8 @@ open class WindowReceptacle(var type: WindowLayout, override var title: String =
 
     private fun initializationPackets() {
         if (viewer != null) {
-            nmsProxy<NMS>().sendWindowsOpen(viewer!!, title = title, type = type)
-            nmsProxy<NMS>().sendWindowsSetSlot(viewer!!, windowId = 0, slot = 45)
+            NMS.instance.sendWindowsOpen(viewer!!, title = title, type = type)
+            NMS.instance.sendWindowsSetSlot(viewer!!, windowId = 0, slot = 45)
             refresh()
         }
     }

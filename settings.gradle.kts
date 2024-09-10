@@ -7,6 +7,7 @@ include(
     ":api:receptacle:receptacle-common",
     ":api:receptacle:receptacle-legacy",
     ":api:receptacle:receptacle-12005",
+    ":api:receptacle:receptacle-12100",
     ":api:action"
 )
 include("api:receptacle:receptacle-common")

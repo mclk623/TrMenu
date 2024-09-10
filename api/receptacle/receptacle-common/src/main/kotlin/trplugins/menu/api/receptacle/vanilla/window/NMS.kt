@@ -2,6 +2,10 @@ package trplugins.menu.api.receptacle.vanilla.window
 
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
+import taboolib.common.util.unsafeLazy
+import taboolib.module.nms.MinecraftVersion
+import taboolib.module.nms.MinecraftVersion.isHigherOrEqual
+import taboolib.module.nms.nmsProxy
 import trplugins.menu.api.receptacle.provider.PlatformProvider
 
 /**
@@ -19,6 +23,14 @@ abstract class NMS {
 
         fun createWindowId(): Boolean {
             return createIdPacketInventory
+        }
+
+        val instance by unsafeLazy {
+            nmsProxy<NMS>(bind = when {
+                isHigherOrEqual(MinecraftVersion.V1_21) -> "{name}Impl3"
+                MinecraftVersion.versionId >= 12005 -> "{name}Impl2"
+                else -> "{name}Impl1"
+            })
         }
     }
 
