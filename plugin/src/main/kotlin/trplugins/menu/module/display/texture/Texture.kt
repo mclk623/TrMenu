@@ -146,8 +146,10 @@ class Texture(
         }
 
         private fun parseMaterial(material: String): ItemStack {
+            println("temp: "+material)
             val split = material.split(":", limit = 2)
             val id = split[0].toIntOrNull() ?: split[0].uppercase().replace("[ _]".toRegex(), "_")
+            println("id: " + id)
 
 
             val item = try {
@@ -156,6 +158,7 @@ class Texture(
                     this.material = Material.getMaterial(name)!!
                 }
             } catch (e: Throwable) {
+                println(e)
                 runCatching {
                     XMaterial.values().find { it.name.equals(id.toString(), true) }
                         ?: XMaterial.values().find { it -> it.legacy.any { it == id.toString() } }
