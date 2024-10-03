@@ -1,9 +1,5 @@
 name: TrMenu Dev
 
-on:
-  push:
-  pull_request:
-
 jobs:
   releaseJar:
     runs-on: ubuntu-latest
